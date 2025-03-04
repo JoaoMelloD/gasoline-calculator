@@ -1,0 +1,17 @@
+* {
+  /*Personalização Global do CSS*/
+  margin: 0 auto;
+  font-family: sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  /*personalização do layout - tela*/
+  background-color: #22272e;
+  height: 100vh;
+  /*alinhando elementos no centro*/
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column ;
+}

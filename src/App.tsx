@@ -1,65 +1,91 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
+import logoImg from "./assets/logo.png";
+import "./App.css";
 
-interface combustivel {
-  nome: string;
-  valor: number;
+// Calculadora:
+/*
+Calculo: alcool/gasolina - Se o resultado for menor que 0.7 compensa usar alcool
+*/
+
+interface InfoProps {
+  title: string;
+  gasolina: string | number;
+  alcool: string | number;
 }
-
 export default function App() {
-  const [resultado, setResultado] = useState("");
-  const [alcool, setAlcool] = useState<combustivel>({
-    nome: "Alcool",
-    valor: 0,
-  });
+  const [gasolinaInput, setGasolinaInput] = useState(1);
+  const [alcoolInput, setAlcoolInput] = useState(1);
+  const [info, setInfo] = useState<InfoProps>();
 
-  const [gasolina, setGasolina] = useState<combustivel>({
-    nome: "Gasolina",
-    valor: 0,
-  });
+  function calcular(event: FormEvent) {
+    event.preventDefault();
 
-  function calcular(e: React.FormEvent) {
-    e.preventDefault();
-    if (gasolina.valor < alcool.valor) {
-      console.log("Gasolina compensa mais");
-      setResultado(`Compensa Usar Compensa Usar ${gasolina.nome}`);
-      return;
-    } else if (gasolina.valor > alcool.valor) {
-      console.log("Alcool Compensa mais");
-      setResultado(`Compensa Usar Compensa Usar ${alcool.nome}`);
+    const calculo = alcoolInput / gasolinaInput;
+
+    if (calculo <= 0.7) {
+      setInfo({
+        title: "Compensa Usar Alcool",
+        gasolina: formatarMoeda(gasolinaInput),
+        alcool: formatarMoeda(alcoolInput),
+      });
     } else {
-      setResultado("Os dois tipos de combustiveis possuem o mesmo valor!")      ;
-      console.log("Os dois tem o mesmo valor!");  
+      setInfo({
+        title: "Compensa Usar Gasolina",
+        gasolina: formatarMoeda(gasolinaInput),
+        alcool: formatarMoeda(alcoolInput), 
+      });
     }
   }
+
+  function formatarMoeda(valor: number) {
+    const valorFormatado = valor.toLocaleString("pt-br", {
+      style: "currency",
+      currency: "BRL",
+    });
+
+    return valorFormatado;
+  }
+
   return (
     <div>
-      <img src="./assets/logo.png" alt="logo" />
-      <h1>Qual a melhor Opção?</h1>
-      <form>
-        <label>{alcool.nome}(Preço Por Litro)</label>
-        <input
-          type="number"
-          value={alcool.valor}
-          onChange={(e) =>
-            setAlcool({ ...alcool, valor: Number(e.target.value) })
-          }
-        />
-        <label>{gasolina.nome}(Preço Por Litro)</label>
-        <input
-          type="number"
-          value={gasolina.valor}
-          onChange={(e) =>
-            setGasolina({ ...gasolina, valor: Number(e.target.value) })
-          }
-        />
-        <button onClick={calcular}>Calcular</button>
+      <main className="container">
+        <img className="logo" src={logoImg} alt="logo-imagem" />
+        <h1 className="title">Qual A Melhor Opção?</h1>
 
-        <div className="resultado">
-          <h1>{resultado}</h1>
-          <p>Alcool: R${alcool.valor}</p>
-          <p>Gasolina: R${gasolina.valor}</p>
-        </div>
-      </form>
+        <form className="form" onSubmit={calcular}>
+          <label>Álcool(Preço Por Litro)</label>
+          <input
+            className="input"
+            type="number"
+            placeholder="4,90"
+            min="1"
+            step="0.01"
+            required
+            value={alcoolInput}
+            onChange={(e) => setAlcoolInput(Number(e.target.value))}
+          />
+          <label>Gasolina(Preço Por Litro)</label>
+          <input
+            className="input"
+            type="number"
+            placeholder="1,90"
+            min="1"
+            step="0.01"
+            required
+            value={gasolinaInput}
+            onChange={(e) => setGasolinaInput(Number(e.target.value))}
+          />
+          <input className="button" type="submit" value="Calcular" />
+        </form>
+
+        {info && Object.keys(info).length > 0 && (
+          <section className="result">
+            <h2 className="result-title">{info?.title}</h2>
+            <span>Álcool: {info?.alcool}</span>
+            <span>Gasolina: {info?.gasolina}</span>
+          </section>
+        )}
+      </main>
     </div>
   );
 }
